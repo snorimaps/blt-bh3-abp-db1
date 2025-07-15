@@ -1,0 +1,17 @@
+{
+  "name": "bharatnet-dashboard",
+  "version": "1.0.0",
+  "description": "BharatNet Program Dashboard - Weekly Progress Monitoring",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -o",
+    "start": "npx http-server . -p 3000 -o",
+    "serve": "npx http-server . -p 3000"
+  },
+  "keywords": ["bharatnet", "dashboard", "react", "html", "javascript"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

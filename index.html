@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BharatNet Program Dashboard</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .metric-card {
+            transition: all 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .state-dot {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .state-dot:hover {
+            transform: scale(1.2);
+        }
+        .number-animation {
+            animation: countUp 1s ease-out;
+        }
+        @keyframes countUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // BharatNet Data
+        const bharatNetData = [
+          {
+            id: 1,
+            state: "Punjab",
+            pia: "HFCL",
+            agreementDate: "19.02.2025",
+            newUpgraded: 673,
+            totalGPs: 13337,
+            hotoTarget: 9498,
+            hotoCompleted04: 9938,
+            hotoCompleted11: 9938,
+            hotoPercentage: 105,
+            surveyTarget: 667,
+            surveyCompleted04: 10364,
+            surveyCompleted11: 11411,
+            surveyPercentage: 114,
+            snocStatus: "Hardware Installation in progress",
+            avgUptimeGPs04: 7007,
+            avgUptimeGPs11: 6965,
+            avgUptimeDelta: -42,
+            ftthConnections04: 182364,
+            ftthConnections11: 183025,
+            ftthDelta: 661,
+            commissionedGPs11: 0,
+            financialProgress: 124.46,
+            ofcTotalRKM: 45081,
+            ofcExistingRKM: 29660,
+            ofcNewRKM: 15421,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 2,
+            state: "Uttar Pradesh (E)",
+            pia: "RVNL",
+            agreementDate: "20.02.2025",
+            newUpgraded: 8644,
+            totalGPs: 43072,
+            hotoTarget: 25821,
+            hotoCompleted04: 23115,
+            hotoCompleted11: 24442,
+            hotoPercentage: 95,
+            surveyTarget: 2154,
+            surveyCompleted04: 28241,
+            surveyCompleted11: 28241,
+            surveyPercentage: 162,
+            snocStatus: "Material delivery & equipment installation in progress",
+            avgUptimeGPs04: 2698,
+            avgUptimeGPs11: 2622,
+            avgUptimeDelta: -76,
+            ftthConnections04: 18143,
+            ftthConnections11: 18224,
+            ftthDelta: 81,
+            commissionedGPs11: 0,
+            financialProgress: 500.82,
+            ofcTotalRKM: 133408,
+            ofcExistingRKM: 77065,
+            ofcNewRKM: 56343,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 3,
+            state: "Uttar Pradesh (W)",
+            pia: "RVNL",
+            agreementDate: "20.02.2025",
+            newUpgraded: 3769,
+            totalGPs: 16218,
+            hotoTarget: 9337,
+            hotoCompleted04: 9386,
+            hotoCompleted11: 9386,
+            hotoPercentage: 101,
+            surveyTarget: 811,
+            surveyCompleted04: 8387,
+            surveyCompleted11: 8387,
+            surveyPercentage: 206,
+            snocStatus: "Civil and Electrical work in progress",
+            avgUptimeGPs04: 1337,
+            avgUptimeGPs11: 1213,
+            avgUptimeDelta: -124,
+            ftthConnections04: 15984,
+            ftthConnections11: 16031,
+            ftthDelta: 47,
+            commissionedGPs11: 0,
+            financialProgress: 191.74,
+            ofcTotalRKM: 58860,
+            ofcExistingRKM: 32596,
+            ofcNewRKM: 26264,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 4,
+            state: "Himachal Pradesh",
+            pia: "ITI",
+            agreementDate: "25.02.2025",
+            newUpgraded: 3363,
+            totalGPs: 3615,
+            hotoTarget: 189,
+            hotoCompleted04: 258,
+            hotoCompleted11: 258,
+            hotoPercentage: 137,
+            surveyTarget: 181,
+            surveyCompleted04: 3873,
+            surveyCompleted11: 3873,
+            surveyPercentage: 143,
+            snocStatus: "Civil and Electrical work in progress",
+            avgUptimeGPs04: 212,
+            avgUptimeGPs11: 202,
+            avgUptimeDelta: -10,
+            ftthConnections04: 2349,
+            ftthConnections11: 2357,
+            ftthDelta: 8,
+            commissionedGPs11: 0,
+            financialProgress: 129.15,
+            ofcTotalRKM: 20943,
+            ofcExistingRKM: 828,
+            ofcNewRKM: 20115,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 5,
+            state: "West Bengal & A&N",
+            pia: "ITI",
+            agreementDate: "25.02.2025",
+            newUpgraded: 668,
+            totalGPs: 3412,
+            hotoTarget: 2058,
+            hotoCompleted04: 2628,
+            hotoCompleted11: 2670,
+            hotoPercentage: 130,
+            surveyTarget: 171,
+            surveyCompleted04: 1168,
+            surveyCompleted11: 1337,
+            surveyPercentage: 129,
+            snocStatus: "Civil and Electrical work in progress",
+            avgUptimeGPs04: 1838,
+            avgUptimeGPs11: 1661,
+            avgUptimeDelta: -177,
+            ftthConnections04: 45790,
+            ftthConnections11: 45972,
+            ftthDelta: 182,
+            commissionedGPs11: 0,
+            financialProgress: 167.44,
+            ofcTotalRKM: 38496,
+            ofcExistingRKM: 19671,
+            ofcNewRKM: 18825,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 6,
+            state: "Bihar",
+            pia: "Polycab",
+            agreementDate: "12.03.2025",
+            newUpgraded: 81,
+            totalGPs: 8405,
+            hotoTarget: 6243,
+            hotoCompleted04: 4212,
+            hotoCompleted11: 6377,
+            hotoPercentage: 102,
+            surveyTarget: 420,
+            surveyCompleted04: 8157,
+            surveyCompleted11: 8866,
+            surveyPercentage: 172,
+            snocStatus: "Civil & Electrical work in progress",
+            avgUptimeGPs04: 2326,
+            avgUptimeGPs11: 2171,
+            avgUptimeDelta: -155,
+            ftthConnections04: 29662,
+            ftthConnections11: 29743,
+            ftthDelta: 81,
+            commissionedGPs11: 0,
+            financialProgress: 154.97,
+            ofcTotalRKM: 53274,
+            ofcExistingRKM: 30610,
+            ofcNewRKM: 22664,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 7,
+            state: "Madhya Pradesh",
+            pia: "NCC",
+            agreementDate: "19.05.2025",
+            newUpgraded: 5046,
+            totalGPs: 22896,
+            hotoTarget: 4463,
+            hotoCompleted04: 679,
+            hotoCompleted11: 1756,
+            hotoPercentage: 39,
+            surveyTarget: 1145,
+            surveyCompleted04: 4867,
+            surveyCompleted11: 6087,
+            surveyPercentage: 122,
+            snocStatus: "Civil & Electrical work in progress",
+            avgUptimeGPs04: 1347,
+            avgUptimeGPs11: 1295,
+            avgUptimeDelta: -52,
+            ftthConnections04: 35189,
+            ftthConnections11: 35183,
+            ftthDelta: -6,
+            commissionedGPs11: 0,
+            financialProgress: 494.30,
+            ofcTotalRKM: 127565,
+            ofcExistingRKM: 61917,
+            ofcNewRKM: 65648,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 8,
+            state: "Uttarakhand",
+            pia: "NCC",
+            agreementDate: "19.05.2025",
+            newUpgraded: 6118,
+            totalGPs: 7937,
+            hotoTarget: 455,
+            hotoCompleted04: 446,
+            hotoCompleted11: 446,
+            hotoPercentage: 98,
+            surveyTarget: 397,
+            surveyCompleted04: 4409,
+            surveyCompleted11: 4516,
+            surveyPercentage: 132,
+            snocStatus: "Civil & Electrical work in progress",
+            avgUptimeGPs04: 627,
+            avgUptimeGPs11: 615,
+            avgUptimeDelta: -12,
+            ftthConnections04: 13539,
+            ftthConnections11: 13520,
+            ftthDelta: -19,
+            commissionedGPs11: 0,
+            financialProgress: 182.11,
+            ofcTotalRKM: 32243,
+            ofcExistingRKM: 5544,
+            ofcNewRKM: 26699,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 9,
+            state: "Jammu & Kashmir",
+            pia: "STL",
+            agreementDate: "11.06.2025",
+            newUpgraded: 4079,
+            totalGPs: 4492,
+            hotoTarget: 103,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 225,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "SNOC location not finalized",
+            avgUptimeGPs04: 396,
+            avgUptimeGPs11: 362,
+            avgUptimeDelta: -34,
+            ftthConnections04: 3832,
+            ftthConnections11: 3836,
+            ftthDelta: 4,
+            commissionedGPs11: 0,
+            financialProgress: 162.05,
+            ofcTotalRKM: 14398,
+            ofcExistingRKM: 1090,
+            ofcNewRKM: 13308,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 10,
+            state: "Kerala",
+            pia: "GR Infra",
+            agreementDate: "16.06.2025",
+            newUpgraded: 1,
+            totalGPs: 978,
+            hotoTarget: 244,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 49,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "SNOC location finalized",
+            avgUptimeGPs04: 607,
+            avgUptimeGPs11: 599,
+            avgUptimeDelta: -8,
+            ftthConnections04: 164413,
+            ftthConnections11: 163572,
+            ftthDelta: -841,
+            commissionedGPs11: 0,
+            financialProgress: 76.50,
+            ofcTotalRKM: 16685,
+            ofcExistingRKM: 8185,
+            ofcNewRKM: 8500,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 11,
+            state: "Karnataka",
+            pia: "Polycab",
+            agreementDate: "17.06.2025",
+            newUpgraded: 209,
+            totalGPs: 6391,
+            hotoTarget: 1546,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 320,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "SNOC location finalized",
+            avgUptimeGPs04: 2330,
+            avgUptimeGPs11: 2354,
+            avgUptimeDelta: 24,
+            ftthConnections04: 31738,
+            ftthConnections11: 31351,
+            ftthDelta: -387,
+            commissionedGPs11: 0,
+            financialProgress: 374.10,
+            ofcTotalRKM: 98021,
+            ofcExistingRKM: 46517,
+            ofcNewRKM: 51504,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 12,
+            state: "Arunachal Pradesh",
+            pia: "ITI",
+            agreementDate: "26.06.2025",
+            newUpgraded: 5394,
+            totalGPs: 5902,
+            hotoTarget: 127,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 295,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "SNOC location not finalized",
+            avgUptimeGPs04: 40,
+            avgUptimeGPs11: 38,
+            avgUptimeDelta: -2,
+            ftthConnections04: 4224,
+            ftthConnections11: 4285,
+            ftthDelta: 61,
+            commissionedGPs11: 0,
+            financialProgress: 0,
+            ofcTotalRKM: 13113,
+            ofcExistingRKM: 923,
+            ofcNewRKM: 12190,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 13,
+            state: "Rajasthan",
+            pia: "Re-Tender",
+            agreementDate: "",
+            newUpgraded: 2606,
+            totalGPs: 11352,
+            hotoTarget: 0,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 0,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "Re-Tender",
+            avgUptimeGPs04: 5838,
+            avgUptimeGPs11: 5888,
+            avgUptimeDelta: 50,
+            ftthConnections04: 38302,
+            ftthConnections11: 38350,
+            ftthDelta: 48,
+            commissionedGPs11: 0,
+            financialProgress: 0,
+            ofcTotalRKM: 112961,
+            ofcExistingRKM: 55418,
+            ofcNewRKM: 57543,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 14,
+            state: "Haryana",
+            pia: "Re-Tender",
+            agreementDate: "",
+            newUpgraded: 174,
+            totalGPs: 6256,
+            hotoTarget: 0,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 0,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "Re-Tender",
+            avgUptimeGPs04: 1182,
+            avgUptimeGPs11: 1066,
+            avgUptimeDelta: -116,
+            ftthConnections04: 118410,
+            ftthConnections11: 118622,
+            ftthDelta: 212,
+            commissionedGPs11: 0,
+            financialProgress: 0,
+            ofcTotalRKM: 36865,
+            ofcExistingRKM: 18842,
+            ofcNewRKM: 18023,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 15,
+            state: "Mizoram",
+            pia: "Re-Tender",
+            agreementDate: "",
+            newUpgraded: 3056,
+            totalGPs: 3817,
+            hotoTarget: 0,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 0,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "Re-Tender",
+            avgUptimeGPs04: 269,
+            avgUptimeGPs11: 234,
+            avgUptimeDelta: -35,
+            ftthConnections04: 934,
+            ftthConnections11: 934,
+            ftthDelta: 0,
+            commissionedGPs11: 0,
+            financialProgress: 0,
+            ofcTotalRKM: 17644,
+            ofcExistingRKM: 2021,
+            ofcNewRKM: 15623,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 16,
+            state: "Assam",
+            pia: "",
+            agreementDate: "",
+            newUpgraded: 1163,
+            totalGPs: 2665,
+            hotoTarget: 0,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 0,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "Pending",
+            avgUptimeGPs04: 330,
+            avgUptimeGPs11: 330,
+            avgUptimeDelta: 0,
+            ftthConnections04: 3072,
+            ftthConnections11: 3082,
+            ftthDelta: 10,
+            commissionedGPs11: 0,
+            financialProgress: 0,
+            ofcTotalRKM: 20083,
+            ofcExistingRKM: 7759,
+            ofcNewRKM: 12324,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 17,
+            state: "Odisha",
+            pia: "BSNL",
+            agreementDate: "",
+            newUpgraded: 44,
+            totalGPs: 6799,
+            hotoTarget: 0,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 0,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "Bid not floated",
+            avgUptimeGPs04: 1081,
+            avgUptimeGPs11: 2528,
+            avgUptimeDelta: 1447,
+            ftthConnections04: 6794,
+            ftthConnections11: 6821,
+            ftthDelta: 27,
+            commissionedGPs11: 0,
+            financialProgress: 0,
+            ofcTotalRKM: 0,
+            ofcExistingRKM: 0,
+            ofcNewRKM: 0,
+            ofcLaidRKM: 0
+          },
+          {
+            id: 18,
+            state: "Sikkim",
+            pia: "",
+            agreementDate: "",
+            newUpgraded: 22,
+            totalGPs: 185,
+            hotoTarget: 0,
+            hotoCompleted04: 0,
+            hotoCompleted11: 0,
+            hotoPercentage: 0,
+            surveyTarget: 0,
+            surveyCompleted04: 0,
+            surveyCompleted11: 0,
+            surveyPercentage: 0,
+            snocStatus: "Pending",
+            avgUptimeGPs04: 2,
+            avgUptimeGPs11: 2,
+            avgUptimeDelta: 0,
+            ftthConnections04: 7,
+            ftthConnections11: 7,
+            ftthDelta: 0,
+            commissionedGPs11: 0,
+            financialProgress: 0,
+            ofcTotalRKM: 0,
+            ofcExistingRKM: 0,
+            ofcNewRKM: 0,
+            ofcLaidRKM: 0
+          }
+        ];
+
+        const stateCoordinates = {
+          "Punjab": { x: 76.79, y: 30.73 },
+          "Uttar Pradesh (E)": { x: 82.07, y: 26.85 },
+          "Uttar Pradesh (W)": { x: 79.85, y: 26.85 },
+          "Himachal Pradesh": { x: 77.17, y: 31.10 },
+          "West Bengal & A&N": { x: 88.36, y: 22.57 },
+          "Bihar": { x: 85.31, y: 25.10 },
+          "Madhya Pradesh": { x: 78.66, y: 22.97 },
+          "Uttarakhand": { x: 79.02, y: 30.07 },
+          "Jammu & Kashmir": { x: 76.27, y: 34.08 },
+          "Kerala": { x: 76.27, y: 10.85 },
+          "Karnataka": { x: 75.71, y: 15.32 },
+          "Arunachal Pradesh": { x: 94.73, y: 28.22 },
+          "Rajasthan": { x: 73.43, y: 27.02 },
+          "Haryana": { x: 76.09, y: 29.06 },
+          "Mizoram": { x: 92.72, y: 23.16 },
+          "Assam": { x: 92.94, y: 26.24 },
+          "Odisha": { x: 85.10, y: 20.95 },
+          "Sikkim": { x: 88.61, y: 27.53 }
+        };
+
+        // Icon components (using Unicode symbols)
+        const TrendingUpIcon = () => <span>📈</span>;
+        const TrendingDownIcon = () => <span>📉</span>;
+        const MinusIcon = () => <span>➖</span>;
+        const BuildingIcon = () => <span>🏢</span>;
+        const MapPinIcon = () => <span>📍</span>;
+        const ActivityIcon = () => <span>⚡</span>;
+        const NetworkIcon = () => <span>🌐</span>;
+        const UsersIcon = () => <span>👥</span>;
+        const DollarSignIcon = () => <span>💰</span>;
+        const CalendarIcon = () => <span>📅</span>;
+        const RefreshIcon = () => <span>🔄</span>;
+
+        // MetricCard Component
+        const MetricCard = ({ title, value, change, changeType, icon, color }) => {
+          const getChangeIcon = () => {
+            switch (changeType) {
+              case 'increase':
+                return <TrendingUpIcon />;
+              case 'decrease':
+                return <TrendingDownIcon />;
+              default:
+                return <MinusIcon />;
+            }
+          };
+
+          const getChangeColor = () => {
+            switch (changeType) {
+              case 'increase':
+                return 'text-green-500';
+              case 'decrease':
+                return 'text-red-500';
+              default:
+                return 'text-gray-500';
+            }
+          };
+
+          return (
+            <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300 metric-card">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+                <div className={`p-2 rounded-lg ${color}`}>
+                  {icon}
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 number-animation">{value}</p>
+                  <div className="flex items-center mt-1">
+                    <span className={`text-sm ${getChangeColor()}`}>
+                      {getChangeIcon()} {Math.abs(change)}% from last week
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // ProgressChart Component
+        const ProgressChart = ({ data, selectedTerritory }) => {
+          const filteredData = selectedTerritory === 'India' ? data.slice(0, 8) : data.filter(state => state.id === parseInt(selectedTerritory));
+          const maxValue = Math.max(...filteredData.map(d => Math.max(d.hotoPercentage, d.surveyPercentage)));
+          const scaleFactor = 200 / maxValue;
+
+          return (
+            <div className="bg-white rounded-lg shadow-md p-6 chart-container">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">HOTO vs Survey Progress</h3>
+              <div className="relative h-64">
+                <svg width="100%" height="100%" viewBox="0 0 600 240">
+                  {filteredData.map((state, index) => {
+                    const barWidth = 40;
+                    const barSpacing = 70;
+                    const x = index * barSpacing + 50;
+                    const hotoHeight = Math.max(state.hotoPercentage * scaleFactor, 5);
+                    const surveyHeight = Math.max(state.surveyPercentage * scaleFactor, 5);
+                    
+                    return (
+                      <g key={state.id}>
+                        <rect
+                          x={x}
+                          y={220 - hotoHeight}
+                          width={barWidth / 2}
+                          height={hotoHeight}
+                          fill="#8B5CF6"
+                          className="hover:opacity-80 transition-opacity"
+                        />
+                        <rect
+                          x={x + barWidth / 2}
+                          y={220 - surveyHeight}
+                          width={barWidth / 2}
+                          height={surveyHeight}
+                          fill="#10B981"
+                          className="hover:opacity-80 transition-opacity"
+                        />
+                        <text
+                          x={x + barWidth / 2}
+                          y={235}
+                          textAnchor="middle"
+                          className="text-xs fill-gray-600"
+                        >
+                          {state.state.split(' ')[0]}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </svg>
+                <div className="absolute top-0 right-0 flex items-center space-x-4 text-sm">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-purple-500 rounded mr-2"></div>
+                    <span>HOTO</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-green-500 rounded mr-2"></div>
+                    <span>Survey</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // PieChart Component
+        const PieChart = ({ data, selectedTerritory }) => {
+          const filteredData = selectedTerritory === 'India' ? data.slice(0, 6) : data.filter(state => state.id === parseInt(selectedTerritory));
+          const total = filteredData.reduce((sum, state) => sum + state.totalGPs, 0);
+          const colors = ['#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#EC4899'];
+          
+          let cumulativePercentage = 0;
+          const slices = filteredData.map((state, index) => {
+            const percentage = (state.totalGPs / total) * 100;
+            const startAngle = (cumulativePercentage / 100) * 360;
+            const endAngle = ((cumulativePercentage + percentage) / 100) * 360;
+            
+            cumulativePercentage += percentage;
+            
+            const largeArc = percentage > 50 ? 1 : 0;
+            const x1 = 100 + 80 * Math.cos((startAngle - 90) * Math.PI / 180);
+            const y1 = 100 + 80 * Math.sin((startAngle - 90) * Math.PI / 180);
+            const x2 = 100 + 80 * Math.cos((endAngle - 90) * Math.PI / 180);
+            const y2 = 100 + 80 * Math.sin((endAngle - 90) * Math.PI / 180);
+            
+            return {
+              path: `M 100 100 L ${x1} ${y1} A 80 80 0 ${largeArc} 1 ${x2} ${y2} z`,
+              color: colors[index % colors.length],
+              state: state.state,
+              percentage: percentage.toFixed(1)
+            };
+          });
+
+          return (
+            <div className="bg-white rounded-lg shadow-md p-6 chart-container">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">GP Distribution by State</h3>
+              <div className="flex items-center justify-center">
+                <div className="relative">
+                  <svg width="200" height="200" viewBox="0 0 200 200">
+                    {slices.map((slice, index) => (
+                      <path
+                        key={index}
+                        d={slice.path}
+                        fill={slice.color}
+                        className="hover:opacity-80 transition-opacity cursor-pointer"
+                        title={`${slice.state}: ${slice.percentage}%`}
+                      />
+                    ))}
+                  </svg>
+                </div>
+                <div className="ml-6 space-y-2">
+                  {slices.map((slice, index) => (
+                    <div key={index} className="flex items-center text-sm">
+                      <div 
+                        className="w-3 h-3 rounded mr-2"
+                        style={{ backgroundColor: slice.color }}
+                      ></div>
+                      <span className="text-gray-700">
+                        {slice.state.split(' ')[0]} {slice.percentage}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // IndiaMap Component
+        const IndiaMap = ({ selectedState, onStateSelect }) => {
+          const stateNames = Object.keys(stateCoordinates);
+
+          return (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">India Map</h3>
+              <div className="relative w-full h-96 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg overflow-hidden">
+                <svg width="100%" height="100%" viewBox="0 0 400 500" className="absolute inset-0">
+                  <path
+                    d="M 100 50 L 300 50 L 320 80 L 330 120 L 310 180 L 300 240 L 280 300 L 260 340 L 240 380 L 200 420 L 160 440 L 120 420 L 100 380 L 80 340 L 70 300 L 60 240 L 70 180 L 80 120 L 90 80 Z"
+                    fill="#E5E7EB"
+                    stroke="#9CA3AF"
+                    strokeWidth="2"
+                  />
+                  
+                  {stateNames.map((state, index) => {
+                    const coords = stateCoordinates[state];
+                    const x = ((coords.x - 68) / 30) * 300 + 50;
+                    const y = ((38 - coords.y) / 28) * 400 + 50;
+                    
+                    return (
+                      <circle
+                        key={state}
+                        cx={x}
+                        cy={y}
+                        r="6"
+                        fill={selectedState === state ? "#3B82F6" : "#10B981"}
+                        stroke="white"
+                        strokeWidth="2"
+                        className="cursor-pointer hover:scale-110 transition-transform state-dot"
+                        onClick={() => onStateSelect(state)}
+                      />
+                    );
+                  })}
+                </svg>
+              </div>
+              <div className="mt-4 text-sm text-gray-600">
+                <p>Click on state markers to view specific data</p>
+              </div>
+            </div>
+          );
+        };
+
+        // StateTable Component
+        const StateTable = ({ data, selectedTerritory }) => {
+          const filteredData = selectedTerritory === 'India' ? data : data.filter(state => state.id === parseInt(selectedTerritory));
+
+          const getStatusColor = (percentage) => {
+            if (percentage >= 100) return 'bg-green-100 text-green-800';
+            if (percentage >= 50) return 'bg-yellow-100 text-yellow-800';
+            return 'bg-red-100 text-red-800';
+          };
+
+          const formatNumber = (num) => {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+          };
+
+          return (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">State-wise Progress Details</h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full table-auto">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">State</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">PIA</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total GPs</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">HOTO %</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Survey %</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">FTTH</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Financial</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredData.map((state) => (
+                      <tr key={state.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-2 text-sm font-medium text-gray-900">{state.state}</td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{state.pia}</td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{formatNumber(state.totalGPs)}</td>
+                        <td className="px-4 py-2">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(state.hotoPercentage)}`}>
+                            {state.hotoPercentage}%
+                          </span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(state.surveyPercentage)}`}>
+                            {state.surveyPercentage}%
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{formatNumber(state.ftthConnections11)}</td>
+                        <td className="px-4 py-2 text-sm text-gray-500">{state.financialProgress} cr</td>
+                        <td className="px-4 py-2 text-sm text-gray-500 max-w-xs truncate">{state.snocStatus}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        };
+
+        // Main App Component
+        const App = () => {
+          const [selectedTerritory, setSelectedTerritory] = React.useState('India');
+          const [selectedUnit, setSelectedUnit] = React.useState('GPs');
+          const [selectedState, setSelectedState] = React.useState('');
+          const [activeTab, setActiveTab] = React.useState('dashboard');
+
+          const handleStateSelect = (state) => {
+            setSelectedState(state);
+            const stateData = bharatNetData.find(s => s.state === state);
+            if (stateData) {
+              setSelectedTerritory(stateData.id.toString());
+            }
+          };
+
+          const filteredData = React.useMemo(() => {
+            if (selectedTerritory === 'India') {
+              return bharatNetData;
+            }
+            return bharatNetData.filter(state => state.id === parseInt(selectedTerritory));
+          }, [selectedTerritory]);
+
+          const aggregatedMetrics = React.useMemo(() => {
+            const totalStates = filteredData.length;
+            const totalGPs = filteredData.reduce((sum, state) => sum + state.totalGPs, 0);
+            const totalHOTO = filteredData.reduce((sum, state) => sum + state.hotoCompleted11, 0);
+            const totalSurvey = filteredData.reduce((sum, state) => sum + state.surveyCompleted11, 0);
+            const totalFTTH = filteredData.reduce((sum, state) => sum + state.ftthConnections11, 0);
+            const avgUptime = filteredData.reduce((sum, state) => sum + state.avgUptimeGPs11, 0);
+            const totalFinancial = filteredData.reduce((sum, state) => sum + state.financialProgress, 0);
+            const completionRate = totalGPs > 0 ? (totalHOTO / totalGPs) * 100 : 0;
+
+            return {
+              totalStates,
+              totalGPs,
+              totalHOTO,
+              totalSurvey,
+              totalFTTH,
+              avgUptime,
+              totalFinancial,
+              completionRate
+            };
+          }, [filteredData]);
+
+          const formatNumber = (num) => {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 100000) return (num / 100000).toFixed(1) + 'L';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+          };
+
+          // AI Insights calculations
+          const aiInsights = React.useMemo(() => {
+            const packageAnalysis = bharatNetData.map(pkg => {
+              // Calculate delays and performance metrics
+              const hotoDelay = pkg.hotoTarget > 0 ? ((pkg.hotoTarget - pkg.hotoCompleted11) / pkg.hotoTarget) * 100 : 0;
+              const surveyDelay = pkg.surveyTarget > 0 ? ((pkg.surveyTarget - pkg.surveyCompleted11) / pkg.surveyTarget) * 100 : 0;
+              
+              // Risk assessment based on multiple factors
+              const riskScore = Math.max(0, Math.min(100, 
+                (hotoDelay * 0.4) + 
+                (surveyDelay * 0.3) + 
+                (pkg.avgUptimeDelta < 0 ? Math.abs(pkg.avgUptimeDelta) * 0.1 : 0) +
+                (pkg.ftthDelta < 0 ? 20 : 0)
+              ));
+              
+              // Performance score (inverse of risk)
+              const performanceScore = Math.max(0, 100 - riskScore + (pkg.hotoPercentage > 100 ? 10 : 0));
+              
+              // Predicted completion based on current progress rate
+              const progressRate = pkg.hotoPercentage / 100;
+              const predictedDays = progressRate > 0 ? Math.ceil((100 - pkg.hotoPercentage) / (progressRate * 0.1)) : 365;
+              
+              return {
+                ...pkg,
+                hotoDelay: Math.max(0, hotoDelay),
+                surveyDelay: Math.max(0, surveyDelay),
+                riskScore,
+                performanceScore,
+                predictedDays: Math.min(predictedDays, 365),
+                status: riskScore > 60 ? 'high-risk' : riskScore > 30 ? 'medium-risk' : 'low-risk'
+              };
+            });
+
+            // Sort for leaderboards
+            const topPerformers = [...packageAnalysis]
+              .filter(pkg => pkg.hotoPercentage > 0)
+              .sort((a, b) => b.performanceScore - a.performanceScore)
+              .slice(0, 5);
+              
+            const mostDelayed = [...packageAnalysis]
+              .filter(pkg => pkg.riskScore > 0)
+              .sort((a, b) => b.riskScore - a.riskScore)
+              .slice(0, 5);
+
+            // Overall statistics
+            const totalPackages = packageAnalysis.length;
+            const highRiskPackages = packageAnalysis.filter(p => p.status === 'high-risk').length;
+            const onTrackPackages = packageAnalysis.filter(p => p.status === 'low-risk').length;
+            const avgCompletionRate = packageAnalysis.reduce((sum, p) => sum + p.hotoPercentage, 0) / totalPackages;
+
+            return {
+              packageAnalysis,
+              topPerformers,
+              mostDelayed,
+              stats: {
+                totalPackages,
+                highRiskPackages,
+                onTrackPackages,
+                avgCompletionRate
+              }
+            };
+          }, []);
+
+          // AI Insights Components
+          const RiskGauge = ({ value, title, color }) => {
+            const circumference = 2 * Math.PI * 45;
+            const strokeDasharray = circumference;
+            const strokeDashoffset = circumference - (value / 100) * circumference;
+
+            return (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+                <div className="flex items-center justify-center">
+                  <div className="relative w-32 h-32">
+                    <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="45"
+                        stroke="#E5E7EB"
+                        strokeWidth="8"
+                        fill="none"
+                      />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="45"
+                        stroke={color}
+                        strokeWidth="8"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeDasharray={strokeDasharray}
+                        strokeDashoffset={strokeDashoffset}
+                        className="transition-all duration-1000 ease-out"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-gray-800">{Math.round(value)}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          };
+
+          const DelayAnalysisChart = ({ data }) => {
+            const maxDelay = Math.max(...data.map(d => Math.max(d.hotoDelay, d.surveyDelay)));
+            const scaleFactor = maxDelay > 0 ? 200 / maxDelay : 1;
+
+            return (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Task Delay Analysis</h3>
+                <div className="relative h-64 overflow-x-auto">
+                  <svg width={Math.max(600, data.length * 80)} height="240" viewBox={`0 0 ${Math.max(600, data.length * 80)} 240`}>
+                    {data.slice(0, 10).map((pkg, index) => {
+                      const barWidth = 30;
+                      const barSpacing = 80;
+                      const x = index * barSpacing + 50;
+                      const hotoDelayHeight = Math.max(pkg.hotoDelay * scaleFactor, 2);
+                      const surveyDelayHeight = Math.max(pkg.surveyDelay * scaleFactor, 2);
+                      
+                      return (
+                        <g key={pkg.id}>
+                          <rect
+                            x={x}
+                            y={220 - hotoDelayHeight}
+                            width={barWidth / 2}
+                            height={hotoDelayHeight}
+                            fill="#EF4444"
+                            className="hover:opacity-80 transition-opacity"
+                          />
+                          <rect
+                            x={x + barWidth / 2}
+                            y={220 - surveyDelayHeight}
+                            width={barWidth / 2}
+                            height={surveyDelayHeight}
+                            fill="#F59E0B"
+                            className="hover:opacity-80 transition-opacity"
+                          />
+                          <text
+                            x={x + barWidth / 2}
+                            y={235}
+                            textAnchor="middle"
+                            className="text-xs fill-gray-600"
+                          >
+                            Pkg {pkg.id}
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                  <div className="absolute top-0 right-0 flex items-center space-x-4 text-sm">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-red-500 rounded mr-2"></div>
+                      <span>HOTO Delay</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-yellow-500 rounded mr-2"></div>
+                      <span>Survey Delay</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          };
+
+          const PredictiveTimeline = ({ data }) => {
+            const sortedData = data.filter(d => d.predictedDays < 365).sort((a, b) => a.predictedDays - b.predictedDays);
+            
+            return (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Predicted Completion Timeline</h3>
+                <div className="space-y-3">
+                  {sortedData.slice(0, 8).map((pkg, index) => {
+                    const progressWidth = (pkg.hotoPercentage / 100) * 100;
+                    const statusColor = pkg.predictedDays <= 30 ? 'bg-green-500' : 
+                                      pkg.predictedDays <= 90 ? 'bg-yellow-500' : 'bg-red-500';
+                    
+                    return (
+                      <div key={pkg.id} className="flex items-center space-x-4">
+                        <div className="w-20 text-sm font-medium text-gray-700">Pkg {pkg.id}</div>
+                        <div className="flex-1">
+                          <div className="w-full bg-gray-200 rounded-full h-4">
+                            <div 
+                              className="bg-blue-500 h-4 rounded-full transition-all duration-1000"
+                              style={{ width: `${progressWidth}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className={`px-2 py-1 rounded text-xs text-white ${statusColor}`}>
+                          {pkg.predictedDays}d
+                        </div>
+                        <div className="w-24 text-sm text-gray-600">{pkg.hotoPercentage}%</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          };
+
+          const Leaderboard = ({ title, data, scoreKey, isGood = true }) => {
+            return (
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+                <div className="space-y-3">
+                  {data.map((pkg, index) => {
+                    const score = pkg[scoreKey];
+                    const rankColor = index === 0 ? 'text-yellow-600' : 
+                                    index === 1 ? 'text-gray-500' : 
+                                    index === 2 ? 'text-yellow-700' : 'text-gray-400';
+                    const bgColor = isGood ? 
+                      (score >= 80 ? 'bg-green-100' : score >= 60 ? 'bg-yellow-100' : 'bg-gray-100') :
+                      (score >= 60 ? 'bg-red-100' : score >= 30 ? 'bg-yellow-100' : 'bg-green-100');
+                    
+                    return (
+                      <div key={pkg.id} className={`flex items-center justify-between p-3 rounded-lg ${bgColor}`}>
+                        <div className="flex items-center space-x-3">
+                          <span className={`text-xl font-bold ${rankColor}`}>#{index + 1}</span>
+                          <div>
+                            <div className="font-medium text-gray-800">{pkg.state}</div>
+                            <div className="text-sm text-gray-600">{pkg.pia}</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-gray-800">{Math.round(score)}{scoreKey.includes('Percentage') ? '%' : ''}</div>
+                          <div className="text-sm text-gray-600">
+                            {isGood ? 'Performance' : 'Risk'} Score
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          };
+
+          return (
+            <div className="min-h-screen bg-gray-50">
+              {/* Header */}
+              <div className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex items-center justify-between h-16">
+                    <div>
+                      <h1 className="text-2xl font-bold text-gray-900">BharatNet Program Dashboard</h1>
+                      <p className="text-sm text-gray-500">Weekly Progress Monitoring (04.07.2025 - 11.07.2025)</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <CalendarIcon />
+                        <span className="ml-1">Last Updated: 15/7/2025, 6:28:10 pm</span>
+                      </div>
+                      <button className="flex items-center px-3 py-1 text-sm text-blue-600 hover:text-blue-800">
+                        <RefreshIcon />
+                        <span className="ml-1">Refresh</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab Navigation */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="border-b border-gray-200">
+                  <nav className="-mb-px flex space-x-8">
+                    <button
+                      onClick={() => setActiveTab('dashboard')}
+                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === 'dashboard'
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      📊 Dashboard
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('ai-insights')}
+                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === 'ai-insights'
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      🤖 AI Insights
+                    </button>
+                  </nav>
+                </div>
+              </div>
+
+              {/* Dashboard Tab */}
+              {activeTab === 'dashboard' && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                  {/* Controls */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    {/* Territory Selector */}
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium text-gray-700">Territory:</label>
+                      <select
+                        value={selectedTerritory}
+                        onChange={(e) => setSelectedTerritory(e.target.value)}
+                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="India">India</option>
+                        {bharatNetData.map((state) => (
+                          <option key={state.id} value={state.id.toString()}>
+                            {state.id}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Units Selector */}
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium text-gray-700">Units:</label>
+                      <div className="flex border border-gray-300 rounded-md overflow-hidden">
+                        {['GPs', 'Blocks', 'Kms'].map((unit) => (
+                          <button
+                            key={unit}
+                            onClick={() => setSelectedUnit(unit)}
+                            className={`px-4 py-2 text-sm font-medium ${
+                              selectedUnit === unit
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {unit}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metrics Grid with Map */}
+                  <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+                    {/* Metrics Cards - 4 columns on large screens */}
+                    <div className="lg:col-span-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <MetricCard
+                          title="Total States"
+                          value={aggregatedMetrics.totalStates}
+                          change={5}
+                          changeType="increase"
+                          icon={<BuildingIcon />}
+                          color="bg-blue-500"
+                        />
+                        <MetricCard
+                          title="Total GPs"
+                          value={formatNumber(aggregatedMetrics.totalGPs)}
+                          change={12}
+                          changeType="increase"
+                          icon={<MapPinIcon />}
+                          color="bg-green-500"
+                        />
+                        <MetricCard
+                          title="HOTO Completed"
+                          value={formatNumber(aggregatedMetrics.totalHOTO)}
+                          change={8}
+                          changeType="increase"
+                          icon={<ActivityIcon />}
+                          color="bg-purple-500"
+                        />
+                        <MetricCard
+                          title="Survey Completed"
+                          value={formatNumber(aggregatedMetrics.totalSurvey)}
+                          change={15}
+                          changeType="increase"
+                          icon={<TrendingUpIcon />}
+                          color="bg-indigo-500"
+                        />
+                        <MetricCard
+                          title="Avg Uptime GPs"
+                          value={formatNumber(aggregatedMetrics.avgUptime)}
+                          change={2}
+                          changeType="increase"
+                          icon={<NetworkIcon />}
+                          color="bg-emerald-500"
+                        />
+                        <MetricCard
+                          title="FTTH Connections"
+                          value={formatNumber(aggregatedMetrics.totalFTTH)}
+                          change={18}
+                          changeType="increase"
+                          icon={<UsersIcon />}
+                          color="bg-cyan-500"
+                        />
+                        <MetricCard
+                          title="Financial Progress"
+                          value={`${aggregatedMetrics.totalFinancial.toFixed(1)} Cr`}
+                          change={25}
+                          changeType="increase"
+                          icon={<DollarSignIcon />}
+                          color="bg-yellow-500"
+                        />
+                        <MetricCard
+                          title="Completion Rate"
+                          value={`${aggregatedMetrics.completionRate.toFixed(1)}%`}
+                          change={7}
+                          changeType="increase"
+                          icon={<TrendingUpIcon />}
+                          color="bg-pink-500"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* India Map - 1 column on large screens */}
+                    <div className="lg:col-span-1">
+                      <IndiaMap selectedState={selectedState} onStateSelect={handleStateSelect} />
+                    </div>
+                  </div>
+
+                  {/* Charts Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                    <div className="xl:col-span-2">
+                      <ProgressChart data={filteredData} selectedTerritory={selectedTerritory} />
+                    </div>
+                    <div className="xl:col-span-1">
+                      <PieChart data={filteredData} selectedTerritory={selectedTerritory} />
+                    </div>
+                  </div>
+
+                  {/* State Table */}
+                  <div className="mb-8">
+                    <StateTable data={filteredData} selectedTerritory={selectedTerritory} />
+                  </div>
+                </div>
+              )}
+
+              {/* AI Insights Tab */}
+              {activeTab === 'ai-insights' && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                  {/* AI Insights Header */}
+                  <div className="mb-6">
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">AI-Powered Predictive Analysis</h2>
+                    <p className="text-gray-600">Advanced analytics and predictions based on current progress patterns</p>
+                  </div>
+
+                  {/* Key Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <RiskGauge 
+                      value={aiInsights.stats.avgCompletionRate} 
+                      title="Overall Progress" 
+                      color="#10B981" 
+                    />
+                    <RiskGauge 
+                      value={(aiInsights.stats.onTrackPackages / aiInsights.stats.totalPackages) * 100} 
+                      title="On Track Packages" 
+                      color="#3B82F6" 
+                    />
+                    <RiskGauge 
+                      value={(aiInsights.stats.highRiskPackages / aiInsights.stats.totalPackages) * 100} 
+                      title="High Risk Packages" 
+                      color="#EF4444" 
+                    />
+                    <div className="bg-white rounded-lg shadow-md p-6">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Predicted Completion</h3>
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-blue-600 mb-2">
+                          {Math.round(aiInsights.packageAnalysis.reduce((sum, p) => sum + p.predictedDays, 0) / aiInsights.packageAnalysis.length)}
+                        </div>
+                        <div className="text-sm text-gray-600">Days (Average)</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Analysis Charts */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <DelayAnalysisChart data={aiInsights.packageAnalysis} />
+                    <PredictiveTimeline data={aiInsights.packageAnalysis} />
+                  </div>
+
+                  {/* Leaderboards */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <Leaderboard 
+                      title="🏆 Top Performers" 
+                      data={aiInsights.topPerformers} 
+                      scoreKey="performanceScore" 
+                      isGood={true}
+                    />
+                    <Leaderboard 
+                      title="⚠️ Most Delayed" 
+                      data={aiInsights.mostDelayed} 
+                      scoreKey="riskScore" 
+                      isGood={false}
+                    />
+                  </div>
+
+                  {/* Detailed Risk Analysis Table */}
+                  <div className="bg-white rounded-lg shadow-md p-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Detailed Risk Analysis</h3>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full table-auto">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Package</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">State</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Risk Level</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">HOTO Delay</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Survey Delay</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Predicted Days</th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Performance Score</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {aiInsights.packageAnalysis.map((pkg) => (
+                            <tr key={pkg.id} className="hover:bg-gray-50">
+                              <td className="px-4 py-2 text-sm font-medium text-gray-900">Package {pkg.id}</td>
+                              <td className="px-4 py-2 text-sm text-gray-500">{pkg.state}</td>
+                              <td className="px-4 py-2">
+                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                  pkg.status === 'high-risk' ? 'bg-red-100 text-red-800' :
+                                  pkg.status === 'medium-risk' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-green-100 text-green-800'
+                                }`}>
+                                  {pkg.status.replace('-', ' ').toUpperCase()}
+                                </span>
+                              </td>
+                              <td className="px-4 py-2 text-sm text-gray-500">{Math.round(pkg.hotoDelay)}%</td>
+                              <td className="px-4 py-2 text-sm text-gray-500">{Math.round(pkg.surveyDelay)}%</td>
+                              <td className="px-4 py-2 text-sm text-gray-500">{pkg.predictedDays} days</td>
+                              <td className="px-4 py-2 text-sm text-gray-500">{Math.round(pkg.performanceScore)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
