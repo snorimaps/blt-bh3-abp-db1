@@ -880,6 +880,123 @@
           );
         };
 
+        // ProjectTimeline Component
+        const ProjectTimeline = ({ data, selectedTerritory }) => {
+          const filteredData = selectedTerritory === 'India' ? data : data.filter(state => state.id === parseInt(selectedTerritory));
+          
+          // Calculate overall progress based on HOTO completion
+          const totalGPs = filteredData.reduce((sum, state) => sum + state.totalGPs, 0);
+          const completedGPs = filteredData.reduce((sum, state) => sum + state.hotoCompleted11, 0);
+          const overallProgress = totalGPs > 0 ? (completedGPs / totalGPs) * 100 : 0;
+          
+          // Calculate current date position (assuming project started Jan 1, 2024)
+          const projectStartDate = new Date('2024-01-01');
+          const currentDate = new Date();
+          const projectDuration = 3 * 365; // 3 years in days
+          const daysPassed = Math.floor((currentDate - projectStartDate) / (1000 * 60 * 60 * 24));
+          const currentPosition = Math.min((daysPassed / projectDuration) * 100, 100);
+          
+          const milestones = [
+            { id: 1, threshold: 10, position: 20, label: 'I', date: 'Jun 29, 2024' },
+            { id: 2, threshold: 30, position: 40, label: 'II', date: 'Dec 26, 2024' },
+            { id: 3, threshold: 50, position: 60, label: 'III', date: 'Jun 24, 2025' },
+            { id: 4, threshold: 75, position: 80, label: 'IV', date: 'Dec 21, 2025' },
+            { id: 5, threshold: 90, position: 90, label: 'V', date: 'Jun 19, 2026' }
+          ];
+
+          return (
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Project Timeline & Milestones</h3>
+                <div className="text-sm text-gray-600">
+                  <span>{selectedTerritory === 'India' ? 'All Territories' : `Territory ${selectedTerritory}`}</span> | 
+                  <span className="ml-1">{overallProgress.toFixed(1)}% Complete</span>
+                </div>
+              </div>
+              
+              {/* Timeline Container */}
+              <div className="relative">
+                {/* Timeline Bar */}
+                <div className="relative h-12 bg-gray-200 rounded-lg overflow-hidden">
+                  {/* Progress Fill */}
+                  <div 
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-green-400 to-blue-500 transition-all duration-1000" 
+                    style={{ width: `${Math.min(overallProgress, 100)}%` }}
+                  ></div>
+                  
+                  {/* Milestone Markers */}
+                  <div className="absolute top-0 left-0 w-full h-full flex items-center">
+                    {/* Start Marker (T0) */}
+                    <div className="absolute flex flex-col items-center" style={{ left: '0%' }}>
+                      <div className="w-3 h-3 bg-green-600 rounded-full border-2 border-white shadow-md"></div>
+                      <div className="text-xs font-medium text-green-600 mt-1">T0</div>
+                    </div>
+                    
+                    {/* Milestone Markers */}
+                    {milestones.map((milestone) => (
+                      <div key={milestone.id} className="absolute flex flex-col items-center milestone-marker" style={{ left: `${milestone.position}%` }}>
+                        <div className={`w-4 h-4 rounded-full border-2 border-white shadow-md ${
+                          overallProgress >= milestone.threshold ? 'bg-green-500' : 'bg-blue-500'
+                        }`}></div>
+                        <div className="text-xs font-medium text-blue-600 mt-1">{milestone.label}</div>
+                        <div className="text-xs text-gray-500">{milestone.threshold}%</div>
+                      </div>
+                    ))}
+                    
+                    {/* End Marker (Te) */}
+                    <div className="absolute flex flex-col items-center" style={{ left: '100%' }}>
+                      <div className="w-3 h-3 bg-red-600 rounded-full border-2 border-white shadow-md"></div>
+                      <div className="text-xs font-medium text-red-600 mt-1">Te</div>
+                    </div>
+                    
+                    {/* Current Date Indicator */}
+                    <div className="absolute flex flex-col items-center transition-all duration-500" style={{ left: `${currentPosition}%` }}>
+                      <div className="w-1 h-12 bg-orange-500 shadow-lg"></div>
+                      <div className="text-xs font-bold text-orange-600 mt-1">Today</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Timeline Dates */}
+                <div className="flex justify-between mt-4 text-xs text-gray-600">
+                  <div className="text-center">
+                    <div className="font-medium">Jan 1, 2024</div>
+                    <div>Project Start</div>
+                  </div>
+                  {milestones.map((milestone) => (
+                    <div key={milestone.id} className="text-center">
+                      <div className="font-medium">{milestone.date}</div>
+                      <div>Milestone {milestone.label}</div>
+                    </div>
+                  ))}
+                  <div className="text-center">
+                    <div className="font-medium">Dec 31, 2026</div>
+                    <div>Project End</div>
+                  </div>
+                </div>
+                
+                {/* Milestone Details */}
+                <div className="grid grid-cols-5 gap-4 mt-6">
+                  {milestones.map((milestone) => (
+                    <div key={milestone.id} className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="font-semibold text-blue-600">Milestone {milestone.label}</div>
+                      <div className="text-sm text-gray-600">{milestone.threshold}% GPs</div>
+                      <div className="text-xs text-gray-500">T0 + {milestone.id * 180} Days</div>
+                      <div className={`text-xs font-medium mt-1 ${
+                        overallProgress >= milestone.threshold ? 'text-green-600' : 
+                        overallProgress > milestone.threshold * 0.8 ? 'text-blue-600' : 'text-orange-600'
+                      }`}>
+                        {overallProgress >= milestone.threshold ? 'Achieved' : 
+                         overallProgress > milestone.threshold * 0.8 ? 'In Progress' : 'Pending'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
         // Main App Component
         const App = () => {
           const [selectedTerritory, setSelectedTerritory] = React.useState('India');
@@ -1097,6 +1214,9 @@
                       </div>
                     </div>
                   </div>
+
+                  {/* Project Timeline */}
+                  <ProjectTimeline data={filteredData} selectedTerritory={selectedTerritory} />
 
                   {/* Metrics Grid with Map */}
                   <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
