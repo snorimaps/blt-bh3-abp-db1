@@ -1033,4 +1033,139 @@
               // Calculate planned vs actual for Survey
               const surveyPlanned = item.surveyTarget;
               const surveyActual = item.surveyCompleted11;
-              
+              const surveyVariance = surveyActual - surveyPlanned;
+              const surveyVariancePercent = surveyPlanned > 0 ? ((surveyVariance / surveyPlanned) * 100) : 0;
+
+              return {
+                state: item.state,
+                hotoVariancePercent,
+                surveyVariancePercent,
+                financialProgress: item.financialProgress,
+                avgUptimeDelta: item.avgUptimeDelta,
+                ftthDelta: item.ftthDelta
+              };
+            });
+
+            return insights;
+          }, []);
+
+          return (
+            <div className="min-h-screen bg-gray-50">
+              {/* Header */}
+              <header className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between items-center py-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <NetworkIcon />
+                        <h1 className="text-2xl font-bold text-gray-900">BharatNet Program Dashboard</h1>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <select
+                        value={selectedTerritory}
+                        onChange={(e) => setSelectedTerritory(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="India">All India</option>
+                        {bharatNetData.map(state => (
+                          <option key={state.id} value={state.id.toString()}>
+                            {state.state}
+                          </option>
+                        ))}
+                      </select>
+                      <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        <RefreshIcon />
+                        <span className="ml-1">Refresh</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </header>
+
+              {/* Main Content */}
+              <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Project Timeline */}
+                <ProjectTimeline data={filteredData} selectedTerritory={selectedTerritory} />
+
+                {/* Metrics Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                  <MetricCard
+                    title="HOTO Completed"
+                    value={{
+                      main: formatNumber(aggregatedMetrics.totalHOTO),
+                      total: formatNumber(aggregatedMetrics.totalGPs),
+                      percentage: (aggregatedMetrics.totalGPs > 0 ? (aggregatedMetrics.totalHOTO / aggregatedMetrics.totalGPs * 100) : 0).toFixed(1),
+                      percentageColor: 'text-blue-600'
+                    }}
+                    change={5.2}
+                    changeType="increase"
+                    icon={<BuildingIcon />}
+                    color="bg-blue-100 text-blue-600"
+                  />
+                  <MetricCard
+                    title="Survey Completed"
+                    value={{
+                      main: formatNumber(aggregatedMetrics.totalSurvey),
+                      total: formatNumber(aggregatedMetrics.totalGPs),
+                      percentage: (aggregatedMetrics.totalGPs > 0 ? (aggregatedMetrics.totalSurvey / aggregatedMetrics.totalGPs * 100) : 0).toFixed(1),
+                      percentageColor: 'text-green-600'
+                    }}
+                    change={3.8}
+                    changeType="increase"
+                    icon={<MapPinIcon />}
+                    color="bg-green-100 text-green-600"
+                  />
+                  <MetricCard
+                    title="FTTH Commissioned"
+                    value={{
+                      main: formatNumber(aggregatedMetrics.totalFTTH),
+                      total: formatNumber(aggregatedMetrics.totalGPs),
+                      percentage: (aggregatedMetrics.totalGPs > 0 ? (aggregatedMetrics.totalFTTH / aggregatedMetrics.totalGPs * 100) : 0).toFixed(1),
+                      percentageColor: 'text-purple-600'
+                    }}
+                    change={-1.2}
+                    changeType="decrease"
+                    icon={<NetworkIcon />}
+                    color="bg-purple-100 text-purple-600"
+                  />
+                  <MetricCard
+                    title="Average Progress"
+                    value={{
+                      main: `${aggregatedMetrics.completionRate.toFixed(1)}%`,
+                      total: '100%',
+                      percentage: aggregatedMetrics.completionRate.toFixed(1),
+                      percentageColor: 'text-orange-600'
+                    }}
+                    change={2.1}
+                    changeType="increase"
+                    icon={<ActivityIcon />}
+                    color="bg-orange-100 text-orange-600"
+                  />
+                </div>
+
+                {/* Charts Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                  <ProgressChart data={filteredData} selectedTerritory={selectedTerritory} />
+                  <PieChart data={filteredData} selectedTerritory={selectedTerritory} />
+                </div>
+
+                {/* Map and Table Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                  <div className="lg:col-span-1">
+                    <IndiaMap selectedState={selectedState} onStateSelect={handleStateSelect} />
+                  </div>
+                  <div className="lg:col-span-2">
+                    <StateTable data={filteredData} selectedTerritory={selectedTerritory} />
+                  </div>
+                </div>
+              </main>
+            </div>
+          );
+        };
+
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
