@@ -635,15 +635,19 @@
                   {icon}
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold text-gray-900 number-animation">{value}</p>
-                  <div className="flex items-center mt-1">
-                    <span className={`text-sm ${getChangeColor()}`}>
-                      {getChangeIcon()} {Math.abs(change)}% from last week
-                    </span>
-                  </div>
+              <div className="flex items-baseline justify-between mb-2">
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-3xl font-bold text-gray-900 number-animation">{value.main}</span>
+                  <span className="text-lg text-gray-500">out of {value.total}</span>
                 </div>
+                <div className={`text-2xl font-bold ${value.percentageColor}`}>
+                  {value.percentage}%
+                </div>
+              </div>
+              <div className="flex items-center">
+                <span className={`text-sm ${getChangeColor()}`}>
+                  {getChangeIcon()} {Math.abs(change)}% from last week
+                </span>
               </div>
             </div>
           );
